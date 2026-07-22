@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="calculadora">
+        <img class="marca-dev" src="EpdevLogo.png" alt="Marca de desarrollador">
+
+        <div class="pantalla" id="resultado">0</div>
+
+        <div class="teclado">
+            <button type="button" class="btn accion" onclick="limpiar()">C</button>
+            <button type="button" class="btn accion" onclick="potencia()">x²</button>
+            <button type="button" class="btn accion" onclick="raizCuadrada()">√</button>
+            <button type="button" class="btn operador" onclick="operar('/')">÷</button>
+
+            <button type="button" class="btn accion" onclick="agregarNumero('7')">7</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('8')">8</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('9')">9</button>
+            <button type="button" class="btn operador" onclick="operar('*')">×</button>
+
+            <button type="button" class="btn accion" onclick="agregarNumero('4')">4</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('5')">5</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('6')">6</button>
+            <button type="button" class="btn operador" onclick="operar('-')">−</button>
+
+            <button type="button" class="btn accion" onclick="agregarNumero('1')">1</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('2')">2</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('3')">3</button>
+            <button type="button" class="btn operador" onclick="operar('+')">+</button>
+
+            <button type="button" class="btn accion cero" onclick="agregarNumero('0')">0</button>
+            <button type="button" class="btn accion" onclick="agregarNumero('.')">.</button>
+            <button type="button" class="btn operador" onclick="calcularResultado()">=</button>
+        </div>
+    </main>
+
+    <script>
+        let display = '0';
+        let operador = null;
+        let primerValor = null;
+
+        function actualizarPantalla() {
+            document.getElementById('resultado').textContent = display;
+        }
+
+        function agregarNumero(valor) {
+            if (display === '0' && valor !== '.') {
+                display = valor;
+            } else if (valor === '.' && display.includes('.')) {
+                return;
+            } else {
+                display += valor;
+            }
+            actualizarPantalla();
+        }
+
+        function operar(simbolo) {
+            if (primerValor === null) {
+                primerValor = parseFloat(display);
+                operador = simbolo;
+                display = '0';
+            } else {
+                calcularResultado();
+                operador = simbolo;
+            }
+            actualizarPantalla();
+        }
+
+        function calcularResultado() {
+            if (primerValor === null || operador === null) {
+                return;
+            }
+
+            const segundoValor = parseFloat(display);
+            let resultado;
+
+            switch (operador) {
+                case '+':
+                    resultado = primerValor + segundoValor;
+                    break;
+                case '-':
+                    resultado = primerValor - segundoValor;
+                    break;
+                case '*':
+                    resultado = primerValor * segundoValor;
+                    break;
+                case '/':
+                    resultado = segundoValor !== 0 ? primerValor / segundoValor : 'Error';
+                    break;
+            }
+
+            display = resultado.toString();
+            primerValor = null;
+            operador = null;
+            actualizarPantalla();
+        }
+
+        function limpiar() {
+            display = '0';
+            primerValor = null;
+            operador = null;
+            actualizarPantalla();
+        }
+
+        function potencia() {
+            const valor = parseFloat(display);
+            if (Number.isNaN(valor)) {
+                display = 'Error';
+            } else {
+                display = Math.pow(valor, 2).toString();
+            }
+            actualizarPantalla();
+        }
+
+        function raizCuadrada() {
+            const valor = parseFloat(display);
+            if (Number.isNaN(valor) || valor < 0) {
+                display = 'Error';
+            } else {
+                display = Math.sqrt(valor).toString();
+            }
+            actualizarPantalla();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            if (/^[0-9.]$/.test(key)) {
+                event.preventDefault();
+                agregarNumero(key);
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                event.preventDefault();
+                operar(key);
+            } else if (key === 'Enter') {
+                event.preventDefault();
+                calcularResultado();
+            } else if (key === 'Escape') {
+                event.preventDefault();
+                limpiar();
+            } else if (key === 'Backspace') {
+                event.preventDefault();
+                if (display.length > 1) {
+                    display = display.slice(0, -1);
+                } else {
+                    display = '0';
+                }
+                actualizarPantalla();
+            }
+        });
+    </script>
+    <footer class="footer">
+        <p>Calculadora desarrollada por <a href="https://github.com/Edupe2603" target="_blank">Eduardo Perez</a></p>
+    </footer>
+</body>
+</html>
